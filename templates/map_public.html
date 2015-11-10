@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<div class="group"><!-- container -->
+
+   <div class="content-holder">
+   		<div id="map"></div>
+    </div>
+    
+  <div class="left-sidebar" id = "left-sidebar" style = "padding: 25px">
+  	<div style="display: block; height: 25px; text-align:center;padding-top: 25px">
+    	<span id="ctl_txt" >
+    		Select a Plant <br>
+    		Or, click on a point to add a plant.
+    	</span>
+	</div>
+  </div>  
+ 
+</div><!-- /container -->
+
+    <script>
+    	//Variable Globetrotters
+    	var map;
+    	var allPlants = []
+
+		function initialize() {
+	    var mapCanvas = document.getElementById('map');
+	    var mapOptions = {
+	      center: new google.maps.LatLng(32.469449, -99.707707),
+	      zoom: 16,
+	      minZoom: 15,
+	      scrollwheel: true,
+	      draggable: true,
+	      mapTypeId: google.maps.MapTypeId.ROADMAP
+	    }
+	    var map = new google.maps.Map(mapCanvas, mapOptions);
+	    map.addListener('click', function(e){
+	    	{% if session.logged_in %}
+	    	redrawSidebar(e.latLng, map);
+	    	{% endif %}
+	    });
+	    {%for plant in plants%}
+	    	allPlants.push({
+	    			ide:{{plant.id}},
+	    			commonName:"{{plant.commonName}}",
+	    			latinName:"{{plant.latinName}}",
+	    			latitude:{{plant.latitude}},
+	    			longitude:{{plant.longitude}}
+		    	}
+	    	)
+	    {%endfor%}
+	    for (var i = 0; i < allPlants.length; i++){
+	    	var positioning = {lat: Number(allPlants[i].latitude), lng: Number(allPlants[i].longitude)};
+	    	var newMarker = new google.maps.Marker({
+	    		ide: allPlants[i].ide,
+	    		position: positioning,
+	    		map: map,
+	    		commonName: allPlants[i].commonName,
+	    		latinName: allPlants[i].latinName
+	    	});
+	    	newMarker.addListener('click', function(){
+	  			console.log("Clicked "+ this.commonName);
+	    		var sidebarContent = "<br>";
+	    		sidebarContent += "ID: <br>";
+	    		sidebarContent += "<span>"+ this.ide +"</span><br><br>";
+	    		sidebarContent += "Common name: <br>";
+	    		sidebarContent += "<span>"+ this.commonName +"</span><br><br>";
+	    		sidebarContent += "Latin name: <br>";
+	    		sidebarContent += "<span>"+ this.latinName +"</span><br><br>";
+	    		sidebarContent += "Latitude: <br>";
+	    		sidebarContent += "<span>"+ this.position.lat() + "</span><br><br>";
+	    		sidebarContent += "Longitude: <br>";
+	    		sidebarContent += "<span>"+ this.position.lng() + "</span><br><br>";
+	    		$('#left-sidebar').html(sidebarContent);
+	    	});
+	    }
+	  }
+	  google.maps.event.addDomListener(window, 'load', initialize);
+	</script>
+{% endblock %}

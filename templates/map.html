@@ -59,7 +59,9 @@
 	    }
 	    var map = new google.maps.Map(mapCanvas, mapOptions);
 	    map.addListener('click', function(e){
+	    	{% if session.logged_in %}
 	    	redrawSidebar(e.latLng, map);
+	    	{% endif %}
 	    });
 	    {%for plant in plants%}
 	    	allPlants.push({

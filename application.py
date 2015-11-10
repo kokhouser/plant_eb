@@ -6,11 +6,11 @@ from sqlalchemy.sql import exists
 application = Flask(__name__)
 application.debug=True
 
-application.secret_key = 'paradoksu' 
+application.secret_key = 'paradoksu'
 
 @application.route("/")
 def blee():
-	return 'Index Page'
+	return redirect(url_for('blah'))
 
 @application.route("/map", methods=['GET', 'POST'])
 def blah():
@@ -41,12 +41,18 @@ def blah():
 	plants = [dict(id=row.id, commonName=row.commonName, latinName=row.latinName, latitude=row.latitude, longitude=row.longitude) for row in p]
 	# Debug statement
 	#print plants
-	return render_template('map.html', plants = plants)
+	if session.get('logged_in') == True:
+		return render_template('map.html', plants = plants)
+	else:
+		return render_template('map_public.html', plants = plants)
 
 @application.route('/login', methods=['GET', 'POST'])
 def bloo():
 	form = LoginForm()
 	if form.validate_on_submit():
+		session['logged_in'] = True
+		session['username'] = form.username.data
+		print session['username']
 		return redirect(url_for('blah'))
 	return render_template('login.html', form=form)
 
