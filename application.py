@@ -56,5 +56,10 @@ def bloo():
 		return redirect(url_for('blah'))
 	return render_template('login.html', form=form)
 
+@application.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('blah'))
+
 if __name__ == "__main__":
 	application.run()

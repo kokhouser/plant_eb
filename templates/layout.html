@@ -7,10 +7,13 @@
   </head>
   <body>
     <div class="pure-menu pure-menu-horizontal">
-      <a href="#" class="pure-menu-heading pure-menu-link">ACU Arboretum</a>
+      <a href="{{ url_for('blah') }}" class="pure-menu-heading pure-menu-link">ACU Arboretum</a>
       <ul class="pure-menu-list">
-          <li class="pure-menu-item"><a href="#" class="pure-menu-link">Home</a></li>
-          <li class="pure-menu-item"><a href="#" class="pure-menu-link">Map</a></li>
+          {% if session.logged_in %}
+          <li class="pure-menu-item"><a href="{{ url_for('logout') }}" class="pure-menu-link">Logout</a></li>
+          {% else %}
+          <li class="pure-menu-item"><a href="{{ url_for('bloo') }}" class="pure-menu-link">Login</a></li>
+          {% endif %}
           <li class="pure-menu-item"><a href="#" class="pure-menu-link">About</a></li>
       </ul>
     </div>
