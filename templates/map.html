@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<div class="group"><!-- container -->
+
+   <div class="content-holder">
+   		<div id="map"></div>
+    </div>
+    
+  <div class="left-sidebar" id = "left-sidebar" style = "padding: 25px">
+  	<div style="display: block; height: 25px; text-align:center;padding-top: 25px">
+    	<span id="ctl_txt" >
+    		Select a Plant <br>
+    		Or, click on a point to add a plant.
+    	</span>
+	</div>
+  </div>  
+ 
+</div><!-- /container -->
+
+    <script>
+    	//Variable Globetrotters
+    	var map;
+    	var allPlants = []
+
+    	function redrawSidebar(latLng, map){
+    		var sidebarContent = "<br>";
+    		// Calls some AJAX wizardry shit
+    		sidebarContent += "<form id ='addPlant' class ='add-Plant' onSubmit='return send();'>";
+    		sidebarContent += "ID: <br>";
+	    	sidebarContent += "<input type=\"text\" name=\"ide\" value=\""+ this.ide +"\"readonly=\"readonly\"><br><br>";
+    		sidebarContent += "Common name: <br>";
+    		sidebarContent += "<input type=\"text\" name=\"commonName\"><br><br>";
+    		sidebarContent += "Latin name: <br>";
+    		sidebarContent += "<input type=\"text\" name=\"latinName\"><br><br>";
+    		sidebarContent += "Latitude: <br>";
+    		sidebarContent += "<input type=\"text\" name=\"latitude\" value=\""+latLng.lat()+"\"><br><br>";
+    		sidebarContent += "Longitude: <br>";
+    		sidebarContent += "<input type=\"text\" name=\"longitude\" value=\""+latLng.lng()+"\"><br><br>";
+    		sidebarContent += "<button value='submit'>Submit</button></form>";
+    		// jQuery sorcery
+    		$('#left-sidebar').html(sidebarContent);
+    		var newMarker = new google.maps.Marker({
+	    		position: latLng,
+	    		map: map
+	    	});
+    	}
+
+		function initialize() {
+	    var mapCanvas = document.getElementById('map');
+	    var mapOptions = {
+	      center: new google.maps.LatLng(32.469449, -99.707707),
+	      zoom: 16,
+	      minZoom: 15,
+	      scrollwheel: true,
+	      draggable: true,
+	      mapTypeId: google.maps.MapTypeId.ROADMAP
+	    }
+	    var map = new google.maps.Map(mapCanvas, mapOptions);
+	    map.addListener('click', function(e){
+	    	redrawSidebar(e.latLng, map);
+	    });
+	    {%for plant in plants%}
+	    	allPlants.push({
+	    			ide:{{plant.id}},
+	    			commonName:"{{plant.commonName}}",
+	    			latinName:"{{plant.latinName}}",
+	    			latitude:{{plant.latitude}},
+	    			longitude:{{plant.longitude}}
+		    	}
+	    	)
+	    {%endfor%}
+	    for (var i = 0; i < allPlants.length; i++){
+	    	var positioning = {lat: Number(allPlants[i].latitude), lng: Number(allPlants[i].longitude)};
+	    	var newMarker = new google.maps.Marker({
+	    		ide: allPlants[i].ide,
+	    		position: positioning,
+	    		map: map,
+	    		commonName: allPlants[i].commonName,
+	    		latinName: allPlants[i].latinName
+	    	});
+	    	newMarker.addListener('click', function(){
+	  			console.log("Clicked "+ this.commonName);
+	    		var sidebarContent = "<br>";
+	    		sidebarContent += "<form id ='addPlant' class ='add-Plant' onSubmit='return send();'>";
+	    		sidebarContent += "ID: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"ide\" value=\""+ this.ide +"\"readonly=\"readonly\"><br><br>";
+	    		sidebarContent += "Common name: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"commonName\" value=\""+ this.commonName +"\"><br><br>";
+	    		sidebarContent += "Latin name: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"latinName\" value=\""+ this.latinName +"\"><br><br>";
+	    		sidebarContent += "Latitude: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"latitude\" value=\""+ this.position.lat() +"\"><br><br>";
+	    		sidebarContent += "Longitude: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"longitude\" value=\""+ this.position.lng() +"\"><br><br>";
+	    		sidebarContent += "<input type=\"checkbox\" name=\"delete\" value=\"delete\">Delete Plant<br><br>";
+	    		sidebarContent += "<button value='submit'>Submit</button></form>";
+	    		$('#left-sidebar').html(sidebarContent);
+	    	});
+	    }
+	  }
+
+	  	/*
+	  	function addOnClickToMarker(index,e){
+	  			console.log(e.type);
+	  			console.log("Clicked "+ allPlants[index].commonName);
+	    		var sidebarContent = "<br>";
+	    		sidebarContent += "<form id ='addPlant' class ='add-Plant' onSubmit='return send();'>";
+	    		sidebarContent += "Common name: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"commonName\" value=\""+ allPlants[index].commonName +"\"><br><br>";
+	    		sidebarContent += "Latin name: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"latinName\" value=\""+ allPlants[index].latinName +"\"><br><br>";
+	    		sidebarContent += "Latitude: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"latitude\" value=\""+ allPlants[index].latitude +"\"><br><br>";
+	    		sidebarContent += "Longitude: <br>";
+	    		sidebarContent += "<input type=\"text\" name=\"longitude\" value=\""+ allPlants[index].longitude +"\"><br><br>";
+	    		sidebarContent += "<button value='submit'>Submit</button></form>";
+	    		$('#left-sidebar').html(sidebarContent);
+	  	}*/
+
+	  	function send(){
+	  		$.ajax({
+	  			type: "POST",
+	  			url: "/map",
+	  			data: $("#addPlant").serialize(),
+	  			success: function(data){
+	  				//alert ("SENT");
+	  			}
+	  		});
+	  		return false;
+	  	}
+	  google.maps.event.addDomListener(window, 'load', initialize);
+	</script>
+{% endblock %}

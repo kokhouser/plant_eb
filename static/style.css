@@ -1,0 +1,33 @@
+html, body{
+	height: 100%;
+}
+
+#map {
+	height: 100%;
+}
+
+body{
+	margin:0;
+}
+
+.group{
+	height: 100%;
+}
+
+.left-sidebar {
+	width: 350px; 
+	margin-right: 30px;
+	height:100%;
+	background-color: #FCFCFC;
+}
+.content-holder {
+  	width: calc(100% - 350px); 
+  	height:100%;
+    float:right; 
+}
+
+@media (max-width: 960px) {
+    .content-holder, .left-sidebar { 
+      float: none; width: 100%; 
+    }
+}

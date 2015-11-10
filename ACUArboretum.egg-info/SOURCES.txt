@@ -1,0 +1,6 @@
+setup.py
+ACUArboretum.egg-info/PKG-INFO
+ACUArboretum.egg-info/SOURCES.txt
+ACUArboretum.egg-info/dependency_links.txt
+ACUArboretum.egg-info/requires.txt
+ACUArboretum.egg-info/top_level.txt

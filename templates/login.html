@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+	{% for message in form.username.errors %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {% for message in form.password.errors %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+<br>
+	<form action="{{ url_for('bloo') }}" method=post>
+	    {{ form.username.label }}: {{ form.username }} <br><br>
+	    {{ form.password.label }}: {{ form.password }}
+	    <br><br>
+	{{form.submit}}
+	{{ form.csrf_token }}
+	</form>	
+{% endblock %}
