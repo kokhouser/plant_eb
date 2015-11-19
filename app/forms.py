@@ -7,7 +7,7 @@ from wtforms.validators import Required
 class LoginForm(Form):
     username = StringField('Username', validators=[Required("Please enter your username.")])
     password = PasswordField('Password', validators=[Required("Please enter your password.")])
-    submit = SubmitField("Login")
+    submit = SubmitField("LOGIN")
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)

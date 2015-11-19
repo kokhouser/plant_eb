@@ -1,22 +1,22 @@
 <!doctype html>
   <head>
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
       <meta name="viewport" content="initial-scale=1.0">
       <meta charset="utf-8">
   </head>
   <body>
-    <div class="pure-menu pure-menu-horizontal">
-      <a href="{{ url_for('blah') }}" class="pure-menu-heading pure-menu-link">ACU Arboretum</a>
-      <ul class="pure-menu-list">
-          {% if session.logged_in %}
-          <li class="pure-menu-item"><a href="{{ url_for('logout') }}" class="pure-menu-link">Logout</a></li>
-          {% else %}
-          <li class="pure-menu-item"><a href="{{ url_for('bloo') }}" class="pure-menu-link">Login</a></li>
-          {% endif %}
-          <li class="pure-menu-item"><a href="#" class="pure-menu-link">About</a></li>
-      </ul>
+    <div class="pure-menu pure-menu-horizontal" style = "padding: 0.25em; border-bottom: 2px solid #009933;">
+        <a href="{{ url_for('blah') }}" class="pure-menu-heading pure-menu-link">ACU Arboretum</a>
+        <ul class="pure-menu-list">
+            {% if session.logged_in %}
+            <li class="pure-menu-item"><a href="{{ url_for('logout') }}" class="pure-menu-link">Logout</a></li>
+            {% else %}
+            <li class="pure-menu-item"><a href="{{ url_for('bloo') }}" class="pure-menu-link">Login</a></li>
+            {% endif %}
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">About</a></li>
+        </ul>
     </div>
-    <hr>
     {% block content %}{% endblock %}
   </body>
