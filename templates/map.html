@@ -9,11 +9,21 @@
     </div>
     
   <div class="left-sidebar" id = "left-sidebar" style = "padding: 25px">
-  	<div style="display: block; height: 25px; text-align:center;padding-top: 25px">
-    	<span id="ctl_txt" >
+  	<div class = "plant-info" id = "plant-info" style = "height: 50%">
+    	<span id="ctl_txt" style="display: block; height: 25px; text-align:center;padding-top: 25px" >
     		Select a Plant <br>
-    		Or, click on a point to add a plant.
+    		Or, click on a plant to edit.
     	</span>
+	</div>
+	<hr><br>
+	<div class = "plant-filter" id = "plant-filter">
+		Filter: 
+		<select id = "plant-selector" onchange = "updateMarkerFilter()">
+			<option value="All plants" selected>All plants</option>
+			{%for plant in plantUnique%}
+			<option value="{{plant}}">{{plant}}</option>
+			{%endfor%}
+		</select>
 	</div>
   </div>  
  
@@ -23,6 +33,126 @@
     	//Variable Globetrotters
     	var map;
     	var allPlants = []
+
+    	function addAllPlants(){
+    		var mapCanvas = document.getElementById('map');
+		    var mapOptions = {
+		      center: new google.maps.LatLng(32.469449, -99.707707),
+		      zoom: 16,
+		      minZoom: 15,
+		      scrollwheel: true,
+		      draggable: true,
+		      mapTypeId: google.maps.MapTypeId.ROADMAP
+		    }
+		    var map = new google.maps.Map(mapCanvas, mapOptions);
+		    map.addListener('click', function(e){
+		    	{% if session.logged_in %}
+		    	redrawSidebar(e.latLng, map);
+		    	{% endif %}
+		    });
+		    {%for plant in plants%}
+		    	allPlants.push({
+		    			ide:{{plant.id}},
+		    			commonName:"{{plant.commonName}}",
+		    			latinName:"{{plant.latinName}}",
+		    			latitude:{{plant.latitude}},
+		    			longitude:{{plant.longitude}}
+			    	}
+		    	)
+		    {%endfor%}
+		    for (var i = 0; i < allPlants.length; i++){
+		    	var positioning = {lat: Number(allPlants[i].latitude), lng: Number(allPlants[i].longitude)};
+		    	var newMarker = new google.maps.Marker({
+		    		ide: allPlants[i].ide,
+		    		position: positioning,
+		    		map: map,
+		    		commonName: allPlants[i].commonName,
+		    		latinName: allPlants[i].latinName
+		    	});
+		    	newMarker.addListener('click', function(){
+		  			console.log("Clicked "+ this.commonName);
+		    		var sidebarContent = "<br>";
+		    		sidebarContent += "<form id ='addPlant' class ='add-Plant' onSubmit='return send();'>";
+		    		sidebarContent += "ID: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"ide\" value=\""+ this.ide +"\"readonly=\"readonly\"><br><br>";
+		    		sidebarContent += "Common name: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"commonName\" value=\""+ this.commonName +"\"><br><br>";
+		    		sidebarContent += "Scientific name: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"latinName\" value=\""+ this.latinName +"\"><br><br>";
+		    		sidebarContent += "Latitude: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"latitude\" value=\""+ this.position.lat() +"\"><br><br>";
+		    		sidebarContent += "Longitude: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"longitude\" value=\""+ this.position.lng() +"\"><br><br>";
+		    		sidebarContent += "<input type=\"checkbox\" name=\"delete\" value=\"delete\">Delete Plant<br><br>";
+		    		sidebarContent += "<button value='submit'>Submit</button></form>";
+		    		$('#plant-info').html(sidebarContent);
+		    	});
+		    }
+    	}
+
+    	function addFilteredPlants(filteredPlants){
+    		var mapCanvas = document.getElementById('map');
+		    var mapOptions = {
+		      center: new google.maps.LatLng(32.469449, -99.707707),
+		      zoom: 16,
+		      minZoom: 15,
+		      scrollwheel: true,
+		      draggable: true,
+		      mapTypeId: google.maps.MapTypeId.ROADMAP
+		    }
+		    var map = new google.maps.Map(mapCanvas, mapOptions);
+		    map.addListener('click', function(e){
+		    	{% if session.logged_in %}
+		    	redrawSidebar(e.latLng, map);
+		    	{% endif %}
+		    });
+		    for (var i = 0; i < filteredPlants.length; i++){
+		    	var positioning = {lat: Number(filteredPlants[i].latitude), lng: Number(filteredPlants[i].longitude)};
+		    	var newMarker = new google.maps.Marker({
+		    		ide: filteredPlants[i].ide,
+		    		position: positioning,
+		    		map: map,
+		    		commonName: filteredPlants[i].commonName,
+		    		latinName: filteredPlants[i].latinName
+		    	});
+		    	newMarker.addListener('click', function(){
+		  			console.log("Clicked "+ this.commonName);
+		    		var sidebarContent = "<br>";
+		    		sidebarContent += "<form id ='addPlant' class ='add-Plant' onSubmit='return send();'>";
+		    		sidebarContent += "ID: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"ide\" value=\""+ this.ide +"\"readonly=\"readonly\"><br><br>";
+		    		sidebarContent += "Common name: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"commonName\" value=\""+ this.commonName +"\"><br><br>";
+		    		sidebarContent += "Scientific name: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"latinName\" value=\""+ this.latinName +"\"><br><br>";
+		    		sidebarContent += "Latitude: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"latitude\" value=\""+ this.position.lat() +"\"><br><br>";
+		    		sidebarContent += "Longitude: <br>";
+		    		sidebarContent += "<input type=\"text\" name=\"longitude\" value=\""+ this.position.lng() +"\"><br><br>";
+		    		sidebarContent += "<input type=\"checkbox\" name=\"delete\" value=\"delete\">Delete Plant<br><br>";
+		    		sidebarContent += "<button value='submit'>Submit</button></form>";
+		    		$('#plant-info').html(sidebarContent);
+			    	});
+		    }
+    	}
+
+    	function updateMarkerFilter(){
+    		var selected = document.getElementById("plant-selector");
+    		var selectedValue = selected.options[selected.selectedIndex].value;
+    		//console.log (selectedValue);
+    		if (selectedValue == "All plants"){
+    			addAllPlants();
+    		}
+    		else{
+    			var filteredPlants = []
+    			for (var i = 0; i < allPlants.length; i++){
+    				if (allPlants[i].commonName == selectedValue){
+    					filteredPlants.push(allPlants[i]);
+    				}
+    			}
+    			addFilteredPlants(filteredPlants);
+    		}
+    	}
 
     	function redrawSidebar(latLng, map){
     		var sidebarContent = "<br>";
@@ -40,7 +170,7 @@
     		sidebarContent += "<input type=\"text\" name=\"longitude\" value=\""+latLng.lng()+"\"><br><br>";
     		sidebarContent += "<button value='submit'>Submit</button></form>";
     		// jQuery sorcery
-    		$('#left-sidebar').html(sidebarContent);
+    		$('#plant-info').html(sidebarContent);
     		var newMarker = new google.maps.Marker({
 	    		position: latLng,
 	    		map: map
@@ -98,7 +228,7 @@
 	    		sidebarContent += "<input type=\"text\" name=\"longitude\" value=\""+ this.position.lng() +"\"><br><br>";
 	    		sidebarContent += "<input type=\"checkbox\" name=\"delete\" value=\"delete\">Delete Plant<br><br>";
 	    		sidebarContent += "<button value='submit'>Submit</button></form>";
-	    		$('#left-sidebar').html(sidebarContent);
+	    		$('#plant-info').html(sidebarContent);
 	    	});
 	    }
 	  }

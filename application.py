@@ -39,12 +39,16 @@ def blah():
 			db.session.commit()
 	p = models.Plant.query.all()
 	plants = [dict(id=row.id, commonName=row.commonName, latinName=row.latinName, latitude=row.latitude, longitude=row.longitude) for row in p]
+	plantUnique = []
+	for plant in plants:
+		if not(plant['commonName'] in plantUnique):
+			plantUnique.append(plant['commonName'])
 	# Debug statement
 	#print plants
 	if session.get('logged_in') == True:
-		return render_template('map.html', plants = plants)
+		return render_template('map.html', plants = plants, plantUnique = plantUnique)
 	else:
-		return render_template('map_public.html', plants = plants)
+		return render_template('map_public.html', plants = plants, plantUnique = plantUnique)
 
 @application.route('/login', methods=['GET', 'POST'])
 def bloo():
