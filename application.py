@@ -43,6 +43,7 @@ def blah():
 	for plant in plants:
 		if not(plant['commonName'] in plantUnique):
 			plantUnique.append(plant['commonName'])
+	plantUnique.sort();
 	# Debug statement
 	#print plants
 	if session.get('logged_in') == True:
