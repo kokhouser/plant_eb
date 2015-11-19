@@ -98,6 +98,9 @@
 
 </style>
 <body>
+    <div class="pure-menu pure-menu-horizontal" style = "padding: 0.25em; border-bottom: 2px solid #009933; background-color:white">
+        <a href="{{ url_for('blah') }}" class="pure-menu-heading pure-menu-link">ACU Arboretum</a>
+    </div>
 	<div class="logo">ACU Arboretum</div>
 	<div class ="login-block">
 		{% for message in form.username.errors %}
